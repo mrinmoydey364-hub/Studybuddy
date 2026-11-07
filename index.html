@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="StudyBuddy helps students plan study tasks, focus with a timer, and revise with flashcards.">
+  <title>StudyBuddy — Study smarter</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <style>
+    :root{color-scheme:dark;--bg:#0b1220;--panel:#121d30;--panel2:#1a2941;--text:#edf3ff;--muted:#a5b4cc;--accent:#8aa5ff;--line:#30415e;--green:#69d9aa}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 90% 0,#243c67 0,transparent 34%),var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+    .wrap{max-width:980px;margin:auto;padding:22px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+    .brand{font-size:1.4rem;font-weight:850}.brand span{color:var(--accent)}.muted,.tag{color:var(--muted)}.tag{font-size:.88rem}
+    nav{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0}button,input,textarea{font:inherit}button{border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:var(--panel2);color:var(--text);cursor:pointer}button:hover{border-color:var(--accent)}button.primary,.tab.active{background:var(--accent);color:#091226;border-color:var(--accent);font-weight:750}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.card{background:linear-gradient(145deg,var(--panel),#101a2b);border:1px solid var(--line);border-radius:18px;padding:19px;min-width:0}.wide{grid-column:1/-1}
+    h1{font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.1;letter-spacing:-1px;margin:8px 0}h2{font-size:1.15rem;margin:0 0 12px}p{color:var(--muted);margin:7px 0 14px}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:18px}.stat{background:var(--panel2);padding:12px;border-radius:13px}.stat strong{display:block;font-size:1.45rem}.stat small,.tiny{color:var(--muted);font-size:.82rem}
+    input,textarea{width:100%;padding:11px 12px;background:#0b1526;border:1px solid var(--line);border-radius:11px;color:var(--text);margin:5px 0 10px}textarea{min-height:80px;resize:vertical}
+    .row{display:flex;gap:8px;align-items:center}.row>*{flex:1}.task{padding:11px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;margin:8px 0;display:flex;gap:10px;align-items:center}.task span{flex:1}.task input{width:auto;margin:0}.task.done span{text-decoration:line-through;color:var(--muted)}
+    .bar{height:9px;background:#263650;border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:var(--green);width:0}.timer{font-size:3.5rem;font-weight:850;letter-spacing:2px;margin:12px 0}
+    .flashcard{min-height:145px;display:grid;place-items:center;text-align:center;padding:22px;background:var(--panel2);border:1px solid var(--line);border-radius:16px;font-size:1.15rem;cursor:pointer}
+    .hidden{display:none!important}.center{text-align:center}.footer{text-align:center;color:var(--muted);font-size:.8rem;margin:24px 0 5px}
+    @media(max-width:640px){.wrap{padding:15px}.grid{grid-template-columns:1fr}.wide{grid-column:auto}.timer{font-size:2.8rem}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><div><div class="brand">Study<span>Buddy</span> ✦</div><div class="tag">Plan. Focus. Revise.</div></div><button id="installBtn" class="hidden">Install app</button></header>
+  <nav><button class="tab active" data-tab="home">Home</button><button class="tab" data-tab="tasks">Tasks</button><button class="tab" data-tab="focus">Focus timer</button><button class="tab" data-tab="cards">Flashcards</button></nav>
+  <main>
+    <section id="home" class="view">
+      <div class="grid">
+        <div class="card wide"><p class="tiny">YOUR PERSONAL STUDY SPACE</p><h1>Make progress, one session at a time.</h1><p>Organize your next task, focus without distractions, and revise actively.</p><div class="stats"><div class="stat"><strong id="leftCount">0</strong><small>Tasks left</small></div><div class="stat"><strong id="doneCount">0</strong><small>Completed</small></div><div class="stat"><strong id="flashCount">3</strong><small>Flashcards</small></div></div></div>
+        <div class="card"><h2>Today's progress</h2><div class="bar"><i id="progressBar"></i></div><p id="progressText">Add your first study task.</p><button class="primary" onclick="showTab('tasks')">Add a task</button></div>
+        <div class="card"><h2>Ready to focus?</h2><p>Try a 25-minute session, then take a short break.</p><button class="primary" onclick="showTab('focus')">Open focus timer</button></div>
+      </div>
+    </section>
+    <section id="tasks" class="view hidden"><div class="card"><h1>Study tasks</h1><p>Break a big goal into a small next step.</p><form id="taskForm"><div class="row"><input id="taskInput" maxlength="120" placeholder="e.g. Revise electrostatics" required><button class="primary" type="submit" style="flex:0 0 auto">Add</button></div></form><div id="taskList"></div><p class="tiny">Tasks are stored on this device in this browser.</p></div></section>
+    <section id="focus" class="view hidden"><div class="card center"><h1>Focus timer</h1><p>Choose a session length.</p><div class="timer" id="clock">25:00</div><div class="row" style="max-width:360px;margin:0 auto 12px"><button onclick="setTimer(15)">15 min</button><button onclick="setTimer(25)">25 min</button><button onclick="setTimer(45)">45 min</button></div><button class="primary" id="startBtn" onclick="toggleTimer()">Start</button> <button onclick="resetTimer()">Reset</button><p id="timerNote" class="tiny">Pause whenever you need.</p></div></section>
+    <section id="cards" class="view hidden"><div class="grid"><div class="card wide"><h1>Flashcards</h1><p>Tap the card to reveal the answer.</p><div class="flashcard" id="flashcard" onclick="flipCard()">Loading…</div><div class="row" style="margin-top:12px"><button onclick="moveCard(-1)">← Previous</button><span class="center tiny" id="cardPosition">1 / 3</span><button onclick="moveCard(1)">Next →</button></div></div><div class="card wide"><h2>Create a flashcard</h2><form id="cardForm"><input id="front" maxlength="180" placeholder="Question or term" required><textarea id="back" maxlength="600" placeholder="Answer or definition" required></textarea><button class="primary">Save flashcard</button></form></div></div></section>
+  </main>
+  <div class="footer">StudyBuddy starter · Your study data stays on this device</div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const defaults=[{q:'What is Coulomb’s law?',a:'The electrostatic force between two point charges is proportional to the product of their charges and inversely proportional to the square of the distance between them.'},{q:'What is the SI unit of electric field?',a:'Newton per coulomb (N/C), also equivalent to volt per metre (V/m).'},{q:'What does a derivative represent?',a:'The instantaneous rate of change of a function with respect to its variable.'}];
+let tasks=JSON.parse(localStorage.getItem('sb_tasks')||'[]');
+let cards=JSON.parse(localStorage.getItem('sb_cards')||'null')||defaults;
+let cardIndex=0,flipped=false,seconds=1500,remaining=1500,interval=null;
+function save(){localStorage.setItem('sb_tasks',JSON.stringify(tasks));localStorage.setItem('sb_cards',JSON.stringify(cards))}
+function showTab(id){document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));$(id).classList.remove('hidden');document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id))}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+function renderTasks(){let list=$('taskList');list.replaceChildren();tasks.forEach((t,i)=>{let el=document.createElement('div');el.className='task'+(t.done?' done':'');let cb=document.createElement('input');cb.type='checkbox';cb.checked=t.done;cb.setAttribute('aria-label','Mark task complete');cb.onchange=()=>{tasks[i].done=cb.checked;save();renderTasks()};let span=document.createElement('span');span.textContent=t.text;let del=document.createElement('button');del.textContent='Delete';del.onclick=()=>{tasks.splice(i,1);save();renderTasks()};el.append(cb,span,del);list.append(el)});let done=tasks.filter(t=>t.done).length,left=tasks.length-done;$('leftCount').textContent=left;$('doneCount').textContent=done;$('flashCount').textContent=cards.length;$('progressBar').style.width=(tasks.length?done/tasks.length*100:0)+'%';$('progressText').textContent=tasks.length?`${done} of ${tasks.length} tasks completed.`:'Add your first study task.'}
+$('taskForm').addEventListener('submit',e=>{e.preventDefault();let v=$('taskInput').value.trim();if(v){tasks.push({text:v,done:false});$('taskInput').value='';save();renderTasks()}});
+function renderCard(){if(!cards.length){$('flashcard').textContent='Create your first flashcard below.';$('cardPosition').textContent='0 / 0';return}$('flashcard').textContent=flipped?cards[cardIndex].a:cards[cardIndex].q;$('cardPosition').textContent=`${cardIndex+1} / ${cards.length}`}
+function flipCard(){if(cards.length){flipped=!flipped;renderCard()}}function moveCard(n){if(cards.length){cardIndex=(cardIndex+n+cards.length)%cards.length;flipped=false;renderCard()}}
+$('cardForm').addEventListener('submit',e=>{e.preventDefault();cards.push({q:$('front').value.trim(),a:$('back').value.trim()});$('front').value='';$('back').value='';cardIndex=cards.length-1;flipped=false;save();renderCard();renderTasks()});
+function showTime(){let m=Math.floor(remaining/60),s=remaining%60;$('clock').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
+function setTimer(min){clearInterval(interval);interval=null;seconds=min*60;remaining=seconds;$('startBtn').textContent='Start';$('timerNote').textContent='Ready when you are.';showTime()}
+function toggleTimer(){if(interval){clearInterval(interval);interval=null;$('startBtn').textContent='Resume';$('timerNote').textContent='Paused.';return}$('startBtn').textContent='Pause';interval=setInterval(()=>{remaining--;showTime();if(remaining<=0){clearInterval(interval);interval=null;$('startBtn').textContent='Start again';$('timerNote').textContent='Session complete. Take a short break.'}},1000)}
+function resetTimer(){clearInterval(interval);interval=null;remaining=seconds;showTime();$('startBtn').textContent='Start';$('timerNote').textContent='Timer reset.'}
+renderTasks();renderCard();showTime();
+let installPrompt=null;const installBtn=$('installBtn');
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;installBtn.classList.remove('hidden')});
+installBtn.addEventListener('click',async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;installBtn.classList.add('hidden')});
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(console.error));
+</script>
+</body></html>

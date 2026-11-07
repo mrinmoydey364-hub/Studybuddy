@@ -1,0 +1,25 @@
+{
+  "id": "./",
+  "name": "StudyBuddy \u2014 Study smarter",
+  "short_name": "StudyBuddy",
+  "description": "Plan study tasks, focus with a timer, and revise with flashcards.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#101827",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
